@@ -17,7 +17,6 @@ class Graph
   @::insertNode = @::insertNodes
 
   createEdgeBetween: (fromNode, toNode) ->
-    console.log "  Creating edge from #{fromNode.id()} -> #{toNode.id()}"
     if not fromNode.hasEdge 'outgoing', toNode.id()
       fromNode['outgoing'].push toNode
 
