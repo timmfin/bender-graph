@@ -2,6 +2,9 @@ class Graph
   constructor: () ->
     @nodesByID = {}
 
+  size: ->
+    Object.keys(@nodesByID).length
+
   hasID: (id) ->
     @nodesByID[id]?
 
@@ -26,26 +29,33 @@ class Graph
 
   # Traversal
 
-  depthFirstSearch: (currentNode, onNodeVisit, depth = 0, nodesVisited = {}) ->
+  depthFirstSearch: (startingNodes, onNodeVisit, depth = 0, nodesVisited = {}) ->
+    startingNodes = [startingNodes] unless Array.isArray startingNodes
+
+    for startingNode in startingNodes
+      @_depthFirstSearchHelper startingNode, onNodeVisit, 0, nodesVisited
+
+  _depthFirstSearchHelper: (currentNode, onNodeVisit, depth, nodesVisited) ->
     currentID = currentNode.id()
-    throw new Error "Cycle in graph, already visited: #{currentID}" if nodesVisited[currentID]
-    nodesVisited[currentID] = true
 
-    # Break early if visit callback returns false
-    return if onNodeVisit(currentNode, depth) is false
+    if not nodesVisited[currentID]
+      nodesVisited[currentID] = true
 
-    # Visit rest of graph
-    for outgoingNode in currentNode.outgoing
-      @depthFirstSearch(outgoingNode, onNodeVisit, depth + 1, nodesVisited)
+      # Visit rest of graph unless the callback returned false
+      if onNodeVisit(currentNode, depth) isnt false
+        for outgoingNode in currentNode.outgoing
+          @_depthFirstSearchHelper(outgoingNode, onNodeVisit, depth + 1, nodesVisited)
 
-  # Alias depthFirstSearch as traverse
-  @::depthFirstSearch = @::traverse
+  # Alias depthFirstSearch as traverseFrom
+  @::traverseFrom = @::depthFirstSearch
 
-  collectAllLeavesStartingFrom: (startingNode, onNodeVisit) ->
+  collectAllLeavesStartingFrom: (startingNodes, onNodeVisit) ->
     leaves = []
     onNodeVisit ?= ->
 
-    @depthFirstSearch startingNode, (currentNode, depth) ->
+    startingNodes = [startingNodes] unless Array.isArray startingNodes
+
+    @depthFirstSearch startingNodes, (currentNode, depth) ->
       leaves.push(currentNode) if currentNode.isLeaf()
       return onNodeVisit(currentNode, depth)
 
