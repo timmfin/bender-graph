@@ -61,6 +61,53 @@ class Graph
 
     leaves
 
+  # Walks the dependency tree backwards, starting from all the leaves, creating a
+  # array that is ordered where all dependencies show up before their parents.
+  #
+  # This ordering allows us to incrementally build every dep/project separately
+  # while still ensuring that we build all of a projects's deps before trying to
+  # build the project itself.
+  allNodesInReverseDependencyOrder: (startingNodes, onNodeVisit) ->
+    alreadyInResults = {}
+    results = []
+    stack = {}
+
+    # Grab all the leaves and use them as the initial places to start traversing
+    for leaf in @collectAllLeavesStartingFrom startingNodes, onNodeVisit
+      stack[leaf.id()] = leaf
+
+    # While there are still nodes to process...
+    while Object.keys(stack).length > 0
+      itemsRemovedInThisPass = 0
+
+      # Do a pass on our current set of nodes. If we've already encountered all of its
+      # outgoing edges (or it has none), then:
+      #
+      #  - Add it to the results
+      #  - Remove it from the current set
+      #  - Add all of its incoming nodes to the current set
+      for nodeToCheckID, nodeToCheck of stack
+
+        # All of the outgoing edges that point to nodes not already pushed to
+        # the results array
+        outgoingNodesStillAround = nodeToCheck.outgoing.filter (dest) ->
+          not alreadyInResults[dest.id()]?
+
+        if outgoingNodesStillAround.length is 0
+          itemsRemovedInThisPass++
+          delete stack[nodeToCheckID]
+          alreadyInResults[nodeToCheckID] = true
+          results.push nodeToCheck
+
+          # Add incoming nodes to the current set
+          for incomingNode in nodeToCheck.incoming
+            if not stack[incomingNode.id()]
+              stack[incomingNode.id()] = incomingNode
+
+      if itemsRemovedInThisPass is 0
+        new Error "Graph traversal error when building reverse dependecies array (was there a cycle or disconnected node(s)?)"
+
+    results
 
 
   # Helpers
