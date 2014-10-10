@@ -15,9 +15,8 @@ class BenderDependencyGraph extends Graph
     nodeIDForProject = BenderNode.idForProject project
 
     return @getNodeByID(nodeIDForProject) if @hasID nodeIDForProject
-    console.log "inserting project", nodeIDForProject
 
-    newNode = new BenderNode project
+    newNode = new BenderNode { project }
     @insertNode newNode
 
     for depName, depVersion of project.mapOfDependencyVersions()
@@ -27,6 +26,14 @@ class BenderDependencyGraph extends Graph
       @createEdgeBetween newNode, depNode
 
     newNode
+
+  nodeForProject: (project) ->
+    nodeIDForProject = BenderNode.idForProject project
+    @getNodeByID(nodeIDForProject)
+
+  nodesForProjects: (projects) ->
+    projects.map (p) =>
+      @nodeForProject p
 
   renderToImage: (imagePath) ->
     graphviz = require('graphviz')

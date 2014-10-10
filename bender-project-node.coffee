@@ -4,7 +4,7 @@ Node = require('./node')
 class BenderProjectNode extends Node
   constructor: (args...) ->
     super args...
-    @project = @data
+    @project = @data.project
 
   id: ->
     @constructor.idForProject @project
