@@ -105,7 +105,7 @@ class Graph
               stack[incomingNode.id()] = incomingNode
 
       if itemsRemovedInThisPass is 0
-        new Error "Graph traversal error when building reverse dependecies array (was there a cycle or disconnected node(s)?)"
+        throw new Error "Graph traversal error when building reverse dependecies array (was there a cycle or disconnected node(s)?)"
 
     results
 
