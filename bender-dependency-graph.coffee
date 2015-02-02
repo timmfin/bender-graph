@@ -20,7 +20,15 @@ class BenderDependencyGraph extends Graph
     @insertNode newNode
 
     for depName, depVersion of project.mapOfDependencyVersions()
-      dep = @benderContext.getProjectOrDependency depName, depVersion
+
+      # If the parent is a served project, look to see if dep is served.
+      # Otherwise, only look in the dependency archive (deps of deps are not
+      # retroactively modified to point to locally served projects)
+      if project.isProject()
+        dep = @benderContext.getProjectOrDependency depName, depVersion
+      else
+        dep = @benderContext.getDependency depName, depVersion
+
       depNode = @_insertProjectHelper dep
 
       @createEdgeBetween newNode, depNode
