@@ -1,5 +1,6 @@
 {
   "name": "bender-graph",
+  "version": "0.0.1",
   "devDependencies": {
     "coffee-script": "^1.8.0"
   }
