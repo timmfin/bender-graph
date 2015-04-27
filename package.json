@@ -2,6 +2,13 @@
   "name": "bender-graph",
   "version": "0.0.1",
   "devDependencies": {
-    "coffee-script": "^1.8.0"
+    "coffee-script": "^1.9.2"
+  },
+  "scripts": {
+    "build": "./compile-coffeescript.sh",
+    "watch": "./watch-coffeescript.sh",
+    "clean": "./clean.sh",
+    "prepublish": "./compile-coffeescript.sh",
+    "postinstall": "./run-prepublish-if-not-already-run.sh"
   }
 }
