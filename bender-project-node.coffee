@@ -1,5 +1,5 @@
 Node = require('./node')
-
+{ convertToSimpleVersionString }  = require('bender-broccoli-utils/static-version-utils')
 
 class BenderProjectNode extends Node
   constructor: (args...) ->
@@ -13,7 +13,7 @@ class BenderProjectNode extends Node
     if project.version is 'static'
       "#{project.name}-local"
     else
-      "#{project.name}-v#{project.version.replace('static-', '')}"
+      "#{project.name}-v#{convertToSimpleVersionString(project.version)}"
 
 
 module.exports = BenderProjectNode
