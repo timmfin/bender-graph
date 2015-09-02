@@ -29,13 +29,16 @@ class Graph
 
   # Traversal
 
-  depthFirstSearch: (startingNodes, onNodeVisit, depth = 0, nodesVisited = {}) ->
+  depthFirstSearch: (startingNodes, onNodeVisit, edgeTypeToFollow = 'outgoing', depth = 0, nodesVisited = {}) ->
     startingNodes = [startingNodes] unless Array.isArray startingNodes
 
     for startingNode in startingNodes
-      @_depthFirstSearchHelper startingNode, onNodeVisit, 0, nodesVisited
+      @_depthFirstSearchHelper startingNode, onNodeVisit, edgeTypeToFollow, 0, nodesVisited
 
-  _depthFirstSearchHelper: (currentNode, onNodeVisit, depth, nodesVisited) ->
+  ancestorDepthFirstSearch: (startingNodes, onNodeVisit) ->
+    @depthFirstSearch(startingNodes, onNodeVisit, 'incoming')
+
+  _depthFirstSearchHelper: (currentNode, onNodeVisit, edgeTypeToFollow, depth, nodesVisited) ->
     currentID = currentNode.id()
 
     if not nodesVisited[currentID]
@@ -43,8 +46,9 @@ class Graph
 
       # Visit rest of graph unless the callback returned false
       if onNodeVisit(currentNode, depth) isnt false
-        for outgoingNode in currentNode.outgoing
-          @_depthFirstSearchHelper(outgoingNode, onNodeVisit, depth + 1, nodesVisited)
+        for otherNode in currentNode[edgeTypeToFollow]
+          @_depthFirstSearchHelper(otherNode, onNodeVisit, edgeTypeToFollow, depth + 1, nodesVisited)
+
 
   # Alias depthFirstSearch as traverseFrom
   @::traverseFrom = @::depthFirstSearch
