@@ -1,6 +1,9 @@
 {
   "name": "bender-graph",
   "version": "0.0.1",
+  "dependencies": {
+    "bender-broccoli-utils": "timmfin/bender-broccoli-utils"
+  },
   "devDependencies": {
     "coffee-script": "^1.9.2"
   },
