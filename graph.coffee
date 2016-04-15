@@ -71,6 +71,9 @@ class Graph
   # This ordering allows us to incrementally build every dep/project separately
   # while still ensuring that we build all of a projects's deps before trying to
   # build the project itself.
+
+  # QUESTION, still need this if we only need the served projects in reverse dep order???
+
   allNodesInReverseDependencyOrder: (startingNodes, onNodeVisit) ->
     alreadyInResults = {}
     results = []
