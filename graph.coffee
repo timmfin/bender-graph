@@ -65,6 +65,19 @@ class Graph
 
     leaves
 
+  collectAllRootsStartingFrom: (startingNodes, onNodeVisit) ->
+    leaves = []
+    onNodeVisit ?= ->
+
+    startingNodes = [startingNodes] unless Array.isArray startingNodes
+
+    @depthFirstSearch startingNodes, (currentNode, depth) ->
+      leaves.push(currentNode) if currentNode.isRoot()
+      return onNodeVisit(currentNode, depth)
+    , 'incoming'
+
+    leaves
+
   # Walks the dependency tree backwards, starting from all the leaves, creating a
   # array that is ordered where all dependencies show up before their parents.
   #
