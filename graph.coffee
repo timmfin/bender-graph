@@ -29,16 +29,16 @@ class Graph
 
   # Traversal
 
-  depthFirstSearch: (startingNodes, onNodeVisit, edgeTypeToFollow = 'outgoing', depth = 0, nodesVisited = {}) ->
+  depthFirstSearch: (startingNodes, onNodeVisit, onNodeExit, edgeTypeToFollow = 'outgoing', depth = 0, nodesVisited = {}) ->
     startingNodes = [startingNodes] unless Array.isArray startingNodes
 
     for startingNode in startingNodes
-      @_depthFirstSearchHelper startingNode, onNodeVisit, edgeTypeToFollow, 0, nodesVisited
+      @_depthFirstSearchHelper startingNode, onNodeVisit, onNodeExit, edgeTypeToFollow, 0, nodesVisited
 
-  ancestorDepthFirstSearch: (startingNodes, onNodeVisit) ->
-    @depthFirstSearch(startingNodes, onNodeVisit, 'incoming')
+  ancestorDepthFirstSearch: (startingNodes, onNodeVisit, onNodeExit) ->
+    @depthFirstSearch(startingNodes, onNodeVisit, onNodeExit, 'incoming')
 
-  _depthFirstSearchHelper: (currentNode, onNodeVisit, edgeTypeToFollow, depth, nodesVisited) ->
+  _depthFirstSearchHelper: (currentNode, onNodeVisit, onNodeExit, edgeTypeToFollow, depth, nodesVisited) ->
     currentID = currentNode.id()
 
     if not nodesVisited[currentID]
@@ -47,7 +47,10 @@ class Graph
       # Visit rest of graph unless the callback returned false
       if onNodeVisit(currentNode, depth) isnt false
         for otherNode in currentNode[edgeTypeToFollow]
-          @_depthFirstSearchHelper(otherNode, onNodeVisit, edgeTypeToFollow, depth + 1, nodesVisited)
+          @_depthFirstSearchHelper(otherNode, onNodeVisit, onNodeExit, edgeTypeToFollow, depth + 1, nodesVisited)
+
+        onNodeExit?(currentNode, depth)
+
 
 
   # Alias depthFirstSearch as traverseFrom
